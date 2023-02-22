@@ -1,0 +1,24 @@
+{
+  "name": "cli-hr-database",
+  "version": "1.0.0",
+  "description": "A command line application for managing a company's human resources.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/tadcos29/CLI-HR-Database.git"
+  },
+  "author": "TGC",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tadcos29/CLI-HR-Database/issues"
+  },
+  "homepage": "https://github.com/tadcos29/CLI-HR-Database#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "inquirer": "^8.2.4",
+    "mysql2": "^3.1.2"
+  }
+}
