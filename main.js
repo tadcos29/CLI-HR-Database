@@ -8,8 +8,6 @@ const deptsMenu = ['View All Departments', 'Add Department', 'Edit Department', 
 const rolesMenu = ['View All Roles', 'Add Role', 'Edit Role', 'Delete Role', 'Back'];
 const employeesMenu = ['View All Employees', 'Add Employee', 'Edit Employee', 'Delete Employee', 'Back'];
 
-
-
 async function createMenu(menu) {
     const rawQuery = await inq.prompt([{type:'list', message: 'What would you like to do?',choices:menu, name:'userSelection', loop:false}]);
     return rawQuery;
@@ -36,26 +34,43 @@ async function init() {
     const result=await createMenu(rgMainMenu);
     console.log(`You have selected ${result.userSelection}, which is good.`);
     let backChoice=false;
+    
     switch (result.userSelection) {
         case 'View/Edit Departments':
         while(!backChoice) {
             const deptResult = await createMenu(deptsMenu);
             if (deptResult.userSelection==='Back') {backChoice=true;} 
-            else {console.log(`You have selected: ${deptResult.userSelection}`);}
+            else {
+                qResult= await processQuery(deptResult.userSelection);
+                showAll = await db.query(qResult);
+                console.table(showAll[0]);
+            }
         }
-        showAll = await db.query(`select dept_name AS 'Department' from department`);
-        console.table(showAll[0]);
+        
         break;
 
         case 'View/Edit Roles':
-        showAll = await db.query(`select title AS 'Title' from role`);
-        console.table(showAll[0]);
+            while(!backChoice) {
+                const roleResult = await createMenu(rolesMenu);
+                if (roleResult.userSelection==='Back') {backChoice=true;} 
+                else {
+                    qResult= await processQuery(roleResult.userSelection);
+                    showAll = await db.query(qResult);
+                    console.table(showAll[0]);
+                }
+            }
         break;
 
         case 'View/Edit Employees':
-        showAll = await db.query(`select CONCAT(employee.first_name,' ',employee.last_name) AS 'Name' from employee`);
-        console.table(showAll[0]);
-            
+        while(!backChoice) {
+            const empResult = await createMenu(employeesMenu);
+            if (empResult.userSelection==='Back') {backChoice=true;} 
+            else {
+                qResult= await processQuery(empResult.userSelection);
+                showAll = await db.query(qResult);
+                console.table(showAll[0]);
+            }
+        }
         break;
     
         default:
