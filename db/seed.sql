@@ -1,16 +1,49 @@
 USE cli_hr_db
 
 INSERT INTO department (dept_name)
-VALUES ('Temporal Salvage'), ('Soul Sales'), ('Matchmaking'), ('Accountability');
+VALUES 
+('Temporal Salvage'),
+('Soul Sales'), 
+('Matchmaking'), 
+('Accountability'),
+('Research and Exploration');
 
 INSERT INTO role (title, salary, department_id)
-VALUES ('Director', 7000.00, null),
-('Chief Temporal Salvager', 150000.00, 1),
- ('Temporal Salvager',150000.00, 1),
-  ('Chief Soul Salesperson', 130000.00, 2),
-   ('Soul Salesperson', 90000.00, 2),
-    ('Head Matchmaker', 170000.00, 3),
-     ('Matchmaker', 120000.00, 3);
+VALUES ('Director', 7000.00, null), --1
+('Chief Temporal Salvager', 150000.00, 1), --2
+('Temporal Salvager',150000.00, 1), --3
+('Chief Soul Salesperson', 130000.00, 2), --4
+('Soul Salesperson', 90000.00, 2), --5
+('Head Matchmaker', 170000.00, 3), --6
+('Matchmaker', 120000.00, 3), --7
+('Head of Accountability', 120000.00, 3) --8
+('Senior Pursuivant', 120000.00, 3), --9
+('Pursuivant', 120000.00, 3), --10
+('Ledgerkeeper', 120000.00, 3), --11
+('Chief Investigator', 120000.00, 3), --12
+('Senior Investigator', 120000.00, 3), --13
+('Investigator', 120000.00, 3); --14
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUES ('John', 'Smith', 1, null ), ('Emma', 'Woodhouse', 6, 1), ('Charles', 'Swann', 2, 1);
+VALUES ('John', 'Smith', 1, null ),
+('Emma', 'Woodhouse', 6, 1),
+('Charles', 'Swann', 2, 1),
+('Oriane', 'de Guermantes', 3, 3),
+('Palamede', ' de Charlus', 3, 3),
+('Dementiy', 'Veen', 3, 3),
+('Anne', 'Steele', 7, 2),
+('Fitzwilliam', 'Darcy', 7, 2),
+('Pavel', 'Chichikov', 4, 1),
+('Annabel', 'Lee', 5, 9),
+('Johann Georg', 'Faust', 5, 9),
+('Ivan', 'Karamazov', 8, 1),
+('Javert', 'Vidocq', 9, 12),
+('Charles', 'Marlow', 10, 12),
+('Catherine', 'Earnshaw', 10, 12),
+('Rodion', 'Raskolnikov', 11, 13),
+('Victor', 'Frankenstein', 12, 1),
+('Timofey', 'Pnin', 13, 17),
+('Abraham', 'van Helsing', 13, 17),
+('Ammon', 'Lymphater', 14, 17),
+('Nemo', 'Dakkar', 14, 18),
+('Jane', 'Porter', 14, 18);
