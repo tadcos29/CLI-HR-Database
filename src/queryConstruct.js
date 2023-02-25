@@ -1,6 +1,10 @@
 const mysql2 = require('mysql2/promise');
 const inq = require('inquirer');
 
+
+// The function takes input from the user, presenting different prompts depending on arguments passed. The optional argument, listQuery, is only relevant for the lists case and
+// contains an array of objects with 'name' and 'value' properties, which is useful insofar as such input causes returns the value associated with the selected name, 
+// allowing for intelligible presentation of choice strings in lists while still retrieving the associated id for SQL operations
 async function pollUser (prompt, type, listQuery) {
     switch (type) {
         case 'var30':
@@ -30,10 +34,12 @@ async function processQuery(selection, db) {
     console.clear();
     switch (selection) {
         case 'View All Employees':
+            // A complex query, it required the appending of the employee table to itself under the new alias mng, to properly include managers. The custom string 'None' is used in lieu of the standard null.
             queryLiteral=await db.query(`select emp.id as 'Id', CONCAT(emp.first_name,' ',emp.last_name) AS 'Name', IFNULL(role.title,'None') AS 'Title', IFNULL(department.dept_name,'None') AS 'Department', IFNULL(CONCAT('£',role.salary),'Zero!') AS 'Salary', IFNULL(CONCAT(mng.first_name,' ',mng.last_name),'None') AS 'Manager' FROM employee emp LEFT JOIN role ON emp.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee mng ON emp.manager_id=mng.id;`);
             queryLiteral = queryLiteral[0];
         break;
         case 'View Employees By Manager':
+            // Similar alias scheme to the preceding. 'ORDER BY' rather than 'GROUP BY' groups the employees by manager.
             queryLiteral=await db.query(`select CONCAT(emp.first_name,' ',emp.last_name) AS 'Employee Name', IFNULL(CONCAT(mng.first_name,' ',mng.last_name),'None') AS 'Manager',  IFNULL(role.title,'None') AS 'Manager Title' FROM employee emp LEFT JOIN employee mng ON emp.manager_id=mng.id LEFT JOIN role on mng.role_id = role.id ORDER BY mng.id;`);
             queryLiteral = queryLiteral[0];
         break;
@@ -51,6 +57,7 @@ async function processQuery(selection, db) {
             queryLiteral = queryLiteral[0];
         break;
         case 'Add Department':
+            // poll the user, wait for reply, perform an INSERT query using a literal with the name returned by the poll function
             dName = await pollUser('department name', 'var30')
             queryLiteral=await db.query(`INSERT INTO department (dept_name) VALUES ('${dName}');`);
             queryLiteral=`${selection} complete. ${dName} added.`
@@ -58,7 +65,9 @@ async function processQuery(selection, db) {
         case 'Add Employee':
             fName = await pollUser(`employee's first name`, 'var30');
             lName = await pollUser(`employee's last name`, 'var30');
+            // The aliases 'name' and 'value' are significant for inquirer behaviour. 
             roleList = await db.query(`SELECT role.title AS name, role.id AS value from role`);
+            // The first element of the array returned by the query is passed to the poll function, to avoid including various SQL meta-information included in the full array.
             sRole = await pollUser(`employee's role`,'list',roleList[0]);
             managerList = await db.query(`SELECT CONCAT(employee.first_name,' ',employee.last_name) AS name, employee.id AS value FROM employee`);
             sMan = await pollUser(`employee's manager`,'list',managerList[0]);
