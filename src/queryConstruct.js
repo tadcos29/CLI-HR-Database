@@ -82,6 +82,33 @@ async function processQuery(selection, db) {
             queryLiteral=`${selection} complete. The department is now known as ${nName}.`
         break;
 
+        case 'Reassign Manager':
+            empList = await db.query(`SELECT CONCAT(employee.first_name,' ',employee.last_name) AS name, employee.id AS value from employee`);
+            dEmployee = await pollUser(`employee to be reassigned to a new manager`,'list',empList[0]);
+            managerList = await db.query(`SELECT CONCAT(employee.first_name,' ',employee.last_name) AS name, employee.id AS value FROM employee`);
+            nMan = await pollUser(`employee's manager`,'list', managerList[0]);
+            queryLiteral=await db.query(`UPDATE employee SET manager_id='${nMan}' WHERE employee.id=${dEmployee};`);
+            queryLiteral=`${selection} complete. The employee has a new manager.`
+        break;
+
+        case 'Reassign Role':
+            empList = await db.query(`SELECT CONCAT(employee.first_name,' ',employee.last_name) AS name, employee.id AS value from employee`);
+            dEmployee = await pollUser(`employee to be given a different role`,'list',empList[0]);
+            roleList = await db.query(`SELECT role.title AS name, role.id AS value FROM role`);
+            dRole = await pollUser(`role to be deleted`,'list',roleList[0]);
+            queryLiteral=await db.query(`UPDATE employee SET role_id='${dRole}' WHERE employee.id=${dEmployee};`);
+            queryLiteral=`${selection} complete. The employee has a new role.`
+        break;
+
+        case 'Change Salary':
+            roleList = await db.query(`SELECT role.title AS name, role.id AS value FROM role`);
+            dRole = await pollUser(`role to adjust compensation`,'list',roleList[0]);
+            rSalaryString = await pollUser(`new salary`, 'salary');
+            rSalary=parseFloat(rSalaryString);
+            queryLiteral=await db.query(`UPDATE role SET salary='${rSalary}' WHERE role.id=${dRole};`);
+            queryLiteral=`${selection} complete. The compensation is now ${rSalary}.`
+        break;
+
         case 'Delete Employee':
             empList = await db.query(`SELECT CONCAT(employee.first_name,' ',employee.last_name) AS name, employee.id AS value from employee`);
             dEmployee = await pollUser(`employee to be deleted`,'list',empList[0]);
@@ -98,17 +125,11 @@ async function processQuery(selection, db) {
             roleList = await db.query(`SELECT role.title AS name, role.id AS value FROM role`);
             dRole = await pollUser(`role to be deleted`,'list',roleList[0]);
             queryLiteral=await db.query(`DELETE FROM role WHERE role.id=${dRole};`);
-            console.log(roleList[0]);
             queryLiteral=`${selection} complete. The role has been deleted.`
         break;
         case 'Departmental Salary Budgets':
-            // The table is Department - Number of Employees - Total Salary Outlay
-            // SUM (employee salaries) WHERE employee->role->department is that department.
-            deptList = await db.query(`SELECT dept_name AS name, department.id AS value from department`);
-            dDept = await pollUser(`department to be renamed`,'list',deptList[0]);
-            nName = await pollUser('new department name', 'var30')
-            queryLiteral=await db.query(`UPDATE department SET dept_name='${nName}' WHERE department.id=${dDept};`);
-            queryLiteral=`${selection} complete. The department is now known as ${nName}.`
+            queryLiteral=await db.query(`select department.id AS 'Id', department.dept_name AS 'Dept Name', COUNT (emp.id) AS 'Number of Employees', SUM (role.salary) AS 'Total Salary Outlay' FROM role JOIN department ON role.department_id = department.id JOIN employee emp ON emp.role_id=role.id GROUP BY department.id;`);
+            queryLiteral = queryLiteral[0];
         break;
         default:
         break;
